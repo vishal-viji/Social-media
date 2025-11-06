@@ -16,9 +16,21 @@ app.use(express.json());
 
 connectDB();
 
-app.get("/", (req, res) => {
-    res.send('API is running')
-});
+// ---------- Serve Frontend in Production ----------
+if (process.env.NODE_ENV === 'production') {
+  const frontendPath = path.join(__dirname, '../frontend/build');
+  app.use(express.static(frontendPath));
+
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(frontendPath, 'index.html'))
+  );
+} else {
+  app.get('/', (req, res) => {
+    res.send('API is running in development mode');
+  });
+}
+// -------------------------------------------------
+
 
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use('/api/auth', authRoutes);
