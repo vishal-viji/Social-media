@@ -154,7 +154,7 @@ function Signup() {
           "Content-Type": "application/json",
         },
       };
-      const { data } = await axios.post("/api/auth/signup", formValues, config);
+      const { data } = await axios.post("https://social-media-backend-yo8t.onrender.com/api/auth/signup", formValues, config);
       localStorage.setItem("userInfo", JSON.stringify(data));
       clearForm();
       window.location.reload();
