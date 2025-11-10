@@ -120,7 +120,7 @@ function Login() {
         },
       };
 
-      const { data } = await axios.post("/api/auth/login", formValues, config);
+      const { data } = await axios.post("https://social-media-backend-yo8t.onrender.com/api/auth/login", formValues, config);
       localStorage.setItem("userInfo", JSON.stringify(data));
       clearForm();
       window.location.reload();
