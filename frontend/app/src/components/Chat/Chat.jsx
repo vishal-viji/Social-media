@@ -68,7 +68,7 @@ function Chat() {
         },
       };
 
-      const { data } = await axios.post(`/api/chat/${chatId}/message`, { content: messageContent }, config);
+      const { data } = await axios.post(`https://social-media-backend-yo8t.onrender.com/api/chat/${chatId}/message`, { content: messageContent }, config);
       const lastMessage = data.messages[data.messages.length - 1]; // Get the last message
  
       socket.emit('sendMessage', { chatId,  "content":lastMessage.content});
