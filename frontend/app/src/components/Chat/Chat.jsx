@@ -42,7 +42,7 @@ function Chat() {
         },
       };
 
-      const { data } = await axios.get(`/api/chat/${chatId}`, config);
+      const { data } = await axios.get(`https://social-media-backend-yo8t.onrender.com/api/chat/${chatId}`, config);
       setMessages(data); // Assuming data contains the array of messages
       setLoading(false);
     } catch (error) {
