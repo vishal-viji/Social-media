@@ -23,7 +23,7 @@ function ChatList() {
         },
       };
 
-      const { data } = await axios.get("https://social-media-backend-yo8t.onrender.com/api/chat", config);
+      const { data } = await axios.get("https://social-media-backend-2zm2.onrender.com/api/chat", config);
       setChats(data);
     } catch (error) {
       setError(
