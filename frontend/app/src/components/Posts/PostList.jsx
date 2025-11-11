@@ -23,7 +23,7 @@ function PostList({ posts, fetchPosts ,startChartHandler}) {
       };
 
       await axios.post(
-        `https://social-media-backend-yo8t.onrender.com/api/posts/${postId}/comments`,
+        `https://social-media-backend-2zm2.onrender.com/api/posts/${postId}/comments`,
         { content: commentContent[postId] },
         config
       );
