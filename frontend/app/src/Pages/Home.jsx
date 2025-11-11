@@ -29,7 +29,7 @@ const startChartHandler = async (userId)=>{
       },
     };
 
-    const {data} = await axios.post('https://social-media-backend-mrsm.onrender.com/api/chat',{userId},config);
+    const {data} = await axios.post('https://social-media-backend-2zm2.onrender.com/api/chat',{userId},config);
     navigate(`/chat/${data._id}`);
 
   }
@@ -51,7 +51,7 @@ const fetchChats = async ()=>{
       },
     };
 
-    const {data} = await axios.get('https://social-media-backend-mrsm.onrender.com/api/chat',config);
+    const {data} = await axios.get('https://social-media-backend-2zm2.onrender.com/api/chat',config);
     setChats(data);
   
   }
@@ -73,7 +73,7 @@ const fetchChats = async ()=>{
             Authorization: `Bearer ${userInfo.token}`,
           },
         };
-        const {data} = await axios.get('https://social-media-backend-mrsm.onrender.com/api/posts',config);
+        const {data} = await axios.get('https://social-media-backend-2zm2.onrender.com/api/posts',config);
         setPosts(data);
         setLoading(false)
       }
