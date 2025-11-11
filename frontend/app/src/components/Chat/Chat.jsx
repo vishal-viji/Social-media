@@ -42,7 +42,7 @@ function Chat() {
         },
       };
 
-      const { data } = await axios.get(`https://social-media-backend-yo8t.onrender.com/api/chat/${chatId}`, config);
+      const { data } = await axios.get(`https://social-media-backend-2zm2.onrender.com/api/chat/${chatId}`, config);
       setMessages(data); // Assuming data contains the array of messages
       setLoading(false);
     } catch (error) {
@@ -68,7 +68,7 @@ function Chat() {
         },
       };
 
-      const { data } = await axios.post(`https://social-media-backend-yo8t.onrender.com/api/chat/${chatId}/message`, { content: messageContent }, config);
+      const { data } = await axios.post(`https://social-media-backend-2zm2.onrender.com/api/chat/${chatId}/message`, { content: messageContent }, config);
       const lastMessage = data.messages[data.messages.length - 1]; // Get the last message
  
       socket.emit('sendMessage', { chatId,  "content":lastMessage.content});
