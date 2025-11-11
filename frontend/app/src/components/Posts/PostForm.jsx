@@ -29,7 +29,7 @@ function PostForm({ fetchPosts }) {
         },
       };
 
-      await axios.post("https://social-media-backend-yo8t.onrender.com/api/posts", formData, config);
+      await axios.post("https://social-media-backend-2zm2.onrender.com/api/posts", formData, config);
       setContent("");
       setImage(null);
       fetchPosts();
