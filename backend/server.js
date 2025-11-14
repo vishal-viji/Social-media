@@ -8,20 +8,20 @@ const chatRoutes = require('./routes/chatRoutes');
 const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
-const cors = require("cors");   // ✅ Added
+const cors = require("cors");
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-// ✅ CORS FIX
-app.use(cors({
-  origin: "https://ecommerce-website-ypye.onrender.com",
-  credentials: true,
-}));
-
 connectDB();
+
+// ✅ Correct CORS
+app.use(cors({
+  origin: "https://social-media-9jg8.onrender.com",  // your new frontend URL
+  credentials: true
+}));
 
 // ---------- Serve Frontend in Production ----------
 if (process.env.NODE_ENV === 'production') {
@@ -46,11 +46,13 @@ app.use('/api/chat', chatRoutes);
 
 const server = http.createServer(app);
 
+// ✅ FIX SOCKET.IO CORS
 const io = new Server(server, {
   cors: {
-    origin: "https://ecommerce-website-ypye.onrender.com",   // ✅ Fixed Socket CORS also
+    origin: "https://social-media-9jg8.onrender.com",
     methods: ["GET", "POST"],
-  },
+    credentials: true
+  }
 });
 
 io.on('connection', (socket) => {
@@ -74,4 +76,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, console.log(`Server is running at PORT ${PORT}`));
+
 
