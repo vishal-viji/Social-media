@@ -7,6 +7,7 @@ const postRoutes = require('./routes/postRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const path = require('path');
 const http = require('http');
+
 const { Server } = require('socket.io');
 const cors = require("cors");
 
