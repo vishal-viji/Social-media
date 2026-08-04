@@ -20,9 +20,7 @@ connectDB();
 
 // ✅ Correct CORS
 app.use(cors({
-  origin: [
-    "*"
-  ],
+  origin: "https://media-guvi.netlify.app",
   credentials: true
 }));
 
