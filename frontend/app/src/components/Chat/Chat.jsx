@@ -6,7 +6,7 @@ import axios from "axios";
 import Loader from "../Loader";
 import Message from "../Message";
 
-const ENDPOINT = 'http://localhost:5000';
+const ENDPOINT = 'https://social-media-backend-2zm2.onrender.com';
 let socket;
 
 function Chat() {
