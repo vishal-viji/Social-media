@@ -20,9 +20,12 @@ connectDB();
 
 // ✅ Correct CORS
 app.use(cors({
-  origin: "https://social-media-9jg8.onrender.com",  // your new frontend URL
+  origin: [
+    "*"
+  ],
   credentials: true
 }));
+
 
 // ---------- Serve Frontend in Production ----------
 if (process.env.NODE_ENV === 'production') {
@@ -50,7 +53,7 @@ const server = http.createServer(app);
 // ✅ FIX SOCKET.IO CORS
 const io = new Server(server, {
   cors: {
-    origin: "https://social-media-9jg8.onrender.com",
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true
   }
