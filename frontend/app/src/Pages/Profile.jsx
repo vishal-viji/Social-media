@@ -85,7 +85,7 @@ function Profile() {
     fetchUserProfile();
   }, [navigate]);
 
-  const searchHandler = async (e) => {
+const searchHandler = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
@@ -105,7 +105,7 @@ function Profile() {
       };
 
       const { data } = await axios.get(
-        `/api/users/search?keyword=${keyword}`,
+        `https://social-media-backend-2zm2.onrender.com/api/users/search?keyword=${keyword}`,
         config
       );
       setResults(data);
@@ -119,8 +119,6 @@ function Profile() {
       setLoading(false);
     }
   };
-
-
 
   const startChartHandler = async (userId)=>{
     try{
@@ -168,7 +166,7 @@ function Profile() {
       formData.append("profilePicture", profilePicture);
 
       const { data } = await axios.post(
-        "/api/users/profile/upload",
+        "https://social-media-backend-2zm2.onrender.com/api/users/profile/upload",
         formData,
         config
       );
@@ -184,7 +182,6 @@ function Profile() {
       setLoading(false);
     }
   };
-
   const enable2FA = async () => {
     try {
       setLoading(true);
