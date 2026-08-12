@@ -49,10 +49,10 @@ function Profile() {
           },
         };
 
-        const { data } = await axios.get("https://social-media-backend-2zm2.onrender.com/api/users/profile", config);
+        const { data } = await axios.get("/api/users/profile", config);
         setUser(data);
 
-        const {data:postsData} =await axios.get(`https://social-media-backend-2zm2.onrender.com/api/posts/user/${pasredUser._id}`,config);
+        const {data:postsData} =await axios.get(`/api/posts/user/${pasredUser._id}`,config);
         setUserPosts(postsData)
 
         if (data.twoFactorAuthSecret) {
@@ -131,7 +131,7 @@ const searchHandler = async (e) => {
         },
       };
   
-      const {data} = await axios.post('https://social-media-backend-2zm2.onrender.com/api/chat',{userId},config);
+      const {data} = await axios.post('/api/chat',{userId},config);
       navigate(`/chat/${data._id}`);
   
     }
@@ -198,7 +198,7 @@ const searchHandler = async (e) => {
         },
       };
 
-      const { data } = await axios.post("https://social-media-backend-2zm2.onrender.com/api/auth/enable-2fa", {}, config);
+      const { data } = await axios.post("/api/auth/enable-2fa", {}, config);
       const otpauthUrl = data.secret;
       QRCode.toDataURL(otpauthUrl, { width: 200, margin: 2 }, (err, url) => {
         if (err) {
@@ -233,10 +233,10 @@ const searchHandler = async (e) => {
         },
       };
 
-      await axios.post(`https://social-media-backend-2zm2.onrender.com/api/users/follow/${userId}`, {}, config);
+      await axios.post(`/api/users/follow/${userId}`, {}, config);
       setMessage("User followed Successfully");
 
-      const { data } = await axios.get("https://social-media-backend-2zm2.onrender.com/api/users/profile", config);
+      const { data } = await axios.get("/api/users/profile", config);
       setUser(data);
     } catch (error) {
       setError(
@@ -262,10 +262,10 @@ const searchHandler = async (e) => {
         },
       };
 
-      await axios.post(`https://social-media-backend-2zm2.onrender.com/api/users/unfollow/${userId}`, {}, config);
+      await axios.post(`/api/users/unfollow/${userId}`, {}, config);
       setMessage("User followed Successfully");
 
-      const { data } = await axios.get("https://social-media-backend-2zm2.onrender.com/api/users/profile", config);
+      const { data } = await axios.get("/api/users/profile", config);
       setUser(data);
     } catch (error) {
       setError(
