@@ -1,18 +1,18 @@
 const asyncHandler= require('express-async-handler');
 const multer = require('multer')
-const path = require('path')
+const { CloudinaryStorage } = require('multer-storage-cloudinary')
+const cloudinary = require('../config/cloudinary')
 const User = require('../models/User')
 
 
-// set up multer for file uploads
+// set up multer to upload directly to Cloudinary
 
-const storage= multer.diskStorage({
- destination(req,file,cb){
-    cb(null,'uploads/')
- },
- filename(req,file,cb){
-    cb(null, `${file.filename}-${Date.now()}${path.extname(file.originalname)}`)
- }
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'social-media-profile-pictures',
+        allowed_formats: ['jpg', 'jpeg', 'png'],
+    },
 })
 
 
@@ -36,7 +36,7 @@ const uploadProfilePicture=[
         const user = await User.findById(req.user._id);
 
         if(user){
-            user.profilePicture=`/uploads/${req.file.filename}`;
+            user.profilePicture=req.file.path;
             await user.save();
 
             res.json({
