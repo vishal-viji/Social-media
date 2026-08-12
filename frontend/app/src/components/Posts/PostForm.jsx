@@ -3,7 +3,6 @@ import { Form, Button } from "react-bootstrap";
 import axios from "axios";
 import Loader from "../Loader";
 import Message from "../Message";
-
 function PostForm({ fetchPosts }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -11,7 +10,6 @@ function PostForm({ fetchPosts }) {
   const handleClose = () => setMessage("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
-
   const submitHandler = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -24,11 +22,9 @@ function PostForm({ fetchPosts }) {
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       const config = {
         headers: {
-          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
-
       await axios.post("/api/posts", formData, config);
       setContent("");
       setImage(null);
@@ -43,7 +39,6 @@ function PostForm({ fetchPosts }) {
       );
     }
   };
-
   return (
     <>
       {error && (
@@ -51,7 +46,6 @@ function PostForm({ fetchPosts }) {
           {error}
         </Message>
       )}
-
       <Form onSubmit={submitHandler}>
         <Form.Group controlId="content">
           <Form.Control
@@ -81,5 +75,4 @@ function PostForm({ fetchPosts }) {
     </>
   );
 }
-
 export default PostForm;

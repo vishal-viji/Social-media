@@ -143,7 +143,7 @@ const searchHandler = async (e) => {
   }
 
 
-  const uploadProfilePictureHandler = async (e) => {
+ const uploadProfilePictureHandler = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
@@ -157,8 +157,7 @@ const searchHandler = async (e) => {
       const pasredUser = JSON.parse(userInfo);
       const config = {
         headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${pasredUser.token}`,
+          Authorization: `Bearer ${pasredUser.token}`,   // Content-Type line removed
         },
       };
 
@@ -182,6 +181,7 @@ const searchHandler = async (e) => {
       setLoading(false);
     }
   };
+  
   const enable2FA = async () => {
     try {
       setLoading(true);
