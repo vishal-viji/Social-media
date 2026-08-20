@@ -20,7 +20,7 @@ connectDB();
 
 // ✅ Correct CORS
 app.use(cors({
-  origin: "https://media-guvi.netlify.app",
+  origin: ["https://media-guvi.netlify.app", "https://social-media-delta-inky.vercel.app"],
   credentials: true
 }));
 
