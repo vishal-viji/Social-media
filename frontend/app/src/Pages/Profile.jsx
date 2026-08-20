@@ -165,7 +165,7 @@ const searchHandler = async (e) => {
       formData.append("profilePicture", profilePicture);
 
       const { data } = await axios.post(
-        "https://social-media-backend-2zm2.onrender.com/api/users/profile/upload",
+        "/api/users/profile/upload",
         formData,
         config
       );
