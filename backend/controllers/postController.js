@@ -1,19 +1,16 @@
 const asyncHandler= require('express-async-handler');
 const multer = require('multer')
-const { CloudinaryStorage } = require('multer-storage-cloudinary')
 const cloudinary = require('../config/cloudinary')
 const Post = require('../models/Post')
 
 
-// set up multer to upload directly to Cloudinary
+// set up multer to buffer the file fully in memory first.
+// We upload to Cloudinary as a separate step AFTER the request body is
+// completely received, instead of piping it live during the request.
+// This avoids the request stream getting cut off mid-upload if Cloudinary
+// (or a proxy in between) takes a little longer to respond.
 
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'social-media-posts',
-        allowed_formats: ['jpg', 'jpeg', 'png'],
-    },
-})
+const storage = multer.memoryStorage();
 
 const upload = multer({
     storage,
@@ -26,6 +23,20 @@ const upload = multer({
     }
 })
 
+// helper: upload a buffer to Cloudinary using a stream, wrapped in a Promise
+const uploadBufferToCloudinary = (buffer) => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'social-media-posts' },
+            (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+            }
+        );
+        uploadStream.end(buffer);
+    });
+};
+
 // Create a new post
 // POST /api/posts
 
@@ -33,7 +44,12 @@ const createPost =[
     upload.single('image'),
     asyncHandler(async (req,res)=>{
         const {content}=req.body;
-        const image= req.file ? req.file.path : null;
+        let image = null;
+
+        if (req.file) {
+            const result = await uploadBufferToCloudinary(req.file.buffer);
+            image = result.secure_url;
+        }
 
         const post = new Post({
             user:req.user._id,
