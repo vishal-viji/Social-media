@@ -37,6 +37,17 @@ app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/chat', chatRoutes);
 
+// ---------- Global error handler ----------
+// Catches any error passed via next(err) or thrown inside async route handlers,
+// logs the real stack trace to the server console, and returns a JSON error response.
+app.use((err, req, res, next) => {
+  console.error('UNHANDLED ERROR:', err.stack || err);
+  res.status(err.statusCode || 500).json({
+    message: err.message || 'Something broke on the server',
+  });
+});
+// -------------------------------------------
+
 const server = http.createServer(app);
 
 // ✅ FIX SOCKET.IO CORS
@@ -69,5 +80,3 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, console.log(`Server is running at PORT ${PORT}`));
-
-
