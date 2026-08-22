@@ -7,6 +7,7 @@ const postRoutes = require('./routes/postRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const path = require('path');
 const http = require('http');
+const multer = require('multer');
 
 const { Server } = require('socket.io');
 const cors = require("cors");
@@ -15,6 +16,30 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+
+// ---------- TEMPORARY DIAGNOSTIC ROUTE ----------
+// Tests raw multipart parsing on Render, independent of auth/db/cloudinary.
+// Remove this block once we've confirmed the root cause.
+const debugUpload = multer({ storage: multer.memoryStorage() });
+
+app.post('/api/debug-upload', debugUpload.single('image'), (req, res) => {
+  console.log('--- DEBUG UPLOAD ---');
+  console.log('Content-Length header:', req.headers['content-length']);
+  console.log('req.file present:', !!req.file);
+  if (req.file) {
+    console.log('Actual bytes received:', req.file.buffer.length);
+    console.log('Original filename:', req.file.originalname);
+  }
+  console.log('req.body:', req.body);
+  console.log('--------------------');
+  res.json({
+    contentLengthHeader: req.headers['content-length'],
+    actualBytesReceived: req.file ? req.file.buffer.length : 0,
+    fileReceived: !!req.file,
+    body: req.body,
+  });
+});
+// -------------------------------------------------
 
 connectDB();
 
