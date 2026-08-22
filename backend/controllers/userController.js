@@ -6,6 +6,11 @@ const User = require('../models/User')
 
 
 // set up multer to upload directly to Cloudinary
+// Exported separately so the route file can run this BEFORE the auth check
+// (protect), letting the incoming file stream start being consumed
+// immediately instead of sitting unread while the auth middleware waits
+// on a database call. This fixed an intermittent "Unexpected end of form"
+// error on Render for the posts route - applying the same fix here.
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
@@ -29,26 +34,26 @@ const upload = multer({
 
 
 // @routes POST /api/users/profile/upload
+// NOTE: multer (upload.single) now runs in userRoutes.js BEFORE the `protect`
+// auth middleware, so this handler can assume req.file and req.user are
+// both already available by the time it runs.
 
-const uploadProfilePicture=[
-    upload.single('profilePicture'),
-    asyncHandler(async(req,res)=>{
-        const user = await User.findById(req.user._id);
+const uploadProfilePicture = asyncHandler(async(req,res)=>{
+    const user = await User.findById(req.user._id);
 
-        if(user){
-            user.profilePicture=req.file.path;
-            await user.save();
+    if(user){
+        user.profilePicture=req.file.path;
+        await user.save();
 
-            res.json({
-                profilePicture:user.profilePicture
-            })
-        }
-        else{
-            res.status(404);
-            throw new Error('User not found')
-        }
-    })
-]
+        res.json({
+            profilePicture:user.profilePicture
+        })
+    }
+    else{
+        res.status(404);
+        throw new Error('User not found')
+    }
+})
 
 // @route GET /api/users/profile 
 const getUserProfile = asyncHandler (async (req,res)=>{
@@ -168,11 +173,4 @@ const unfollowUser = asyncHandler (async (req,res)=>{
       }
 })
 
-
-
-
-
-
-
-
-module.exports={uploadProfilePicture,getUserProfile,updateUserProfile,searchUsers,followUser,unfollowUser}
+module.exports={upload,uploadProfilePicture,getUserProfile,updateUserProfile,searchUsers,followUser,unfollowUser}
