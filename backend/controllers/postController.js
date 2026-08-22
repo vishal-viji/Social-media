@@ -4,12 +4,10 @@ const cloudinary = require('../config/cloudinary')
 const Post = require('../models/Post')
 
 
-// set up multer to buffer the file fully in memory first.
-// We upload to Cloudinary as a separate step AFTER the request body is
-// completely received, instead of piping it live during the request.
-// This avoids the request stream getting cut off mid-upload if Cloudinary
-// (or a proxy in between) takes a little longer to respond.
-
+// Multer buffers the file fully in memory. Exported separately so the route
+// file can run this BEFORE the auth check, letting the incoming file stream
+// start being consumed immediately instead of sitting unread while the auth
+// middleware waits on a database call.
 const storage = multer.memoryStorage();
 
 const upload = multer({
@@ -39,28 +37,28 @@ const uploadBufferToCloudinary = (buffer) => {
 
 // Create a new post
 // POST /api/posts
+// NOTE: multer (upload.single) now runs in postRoutes.js BEFORE the `protect`
+// auth middleware, so this handler can assume req.file and req.user are both
+// already available by the time it runs.
 
-const createPost =[
-    upload.single('image'),
-    asyncHandler(async (req,res)=>{
-        const {content}=req.body;
-        let image = null;
+const createPost = asyncHandler(async (req,res)=>{
+    const {content}=req.body;
+    let image = null;
 
-        if (req.file) {
-            const result = await uploadBufferToCloudinary(req.file.buffer);
-            image = result.secure_url;
-        }
+    if (req.file) {
+        const result = await uploadBufferToCloudinary(req.file.buffer);
+        image = result.secure_url;
+    }
 
-        const post = new Post({
-            user:req.user._id,
-            content,
-            image,
-        })
-
-        const createdPost = await post.save();
-        res.status(201).json(createdPost)
+    const post = new Post({
+        user:req.user._id,
+        content,
+        image,
     })
-];
+
+    const createdPost = await post.save();
+    res.status(201).json(createdPost)
+});
 
 //Get posts from followings users or own posts
 // GET /api/posts
@@ -146,6 +144,7 @@ const deletePost=asyncHandler(async (req,res)=>{
 })
 
 module.exports={
+    upload,
     createPost,
     getPosts,
     createComment,
