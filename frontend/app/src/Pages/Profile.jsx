@@ -418,7 +418,7 @@ const searchHandler = async (e) => {
                   </span>
                 </h5>
 
-                {user.followers?.map((follower) => (
+                {user.followers?.filter(Boolean).map((follower) => (
                   <Row className="g-2">
                     <Col key={follower._id}>
                       <Card className="h-100 text-center">
@@ -469,7 +469,7 @@ const searchHandler = async (e) => {
                 </h5>
 
                 
-                {user.following?.map((following) => (
+                {user.following?.filter(Boolean).map((following) => (
                   <Row className="g-2">
                     <Col key={following._id}>
                       <Card className="h-100 text-center">
