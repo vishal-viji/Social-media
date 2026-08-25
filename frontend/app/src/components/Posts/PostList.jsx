@@ -87,10 +87,10 @@ function PostList({ posts, fetchPosts ,startChartHandler}) {
                   <div className="d-flex align-items-center">
                     <img
                       src={
-                        post.user.profilePicture ||
+                        post.user?.profilePicture ||
                         "https://via.placeholder.com/50"
                       }
-                      alt={post.user.username}
+                      alt={post.user?.username || "Unknown user"}
                       className="rounded-circle me-2"
                       style={{
                         width: "40px",
@@ -98,8 +98,8 @@ function PostList({ posts, fetchPosts ,startChartHandler}) {
                         objectFit: "cover",
                       }}
                     />
-                    <span>{post.user.username}</span>
-                    {post.user._id ===
+                    <span>{post.user?.username || "Unknown user"}</span>
+                    {post.user?._id ===
                       JSON.parse(localStorage.getItem("userInfo"))._id && (
                       <Button
                         variant="danger"
@@ -110,7 +110,9 @@ function PostList({ posts, fetchPosts ,startChartHandler}) {
                       </Button>
                     )}
 
-<Button variant="light" onClick={()=>startChartHandler(post.user._id)}>Chat</Button>
+{post.user?._id && (
+  <Button variant="light" onClick={()=>startChartHandler(post.user._id)}>Chat</Button>
+)}
                   </div>
                 </Card.Title>
                 <Card.Text>{post.content}</Card.Text>
@@ -190,7 +192,7 @@ function PostList({ posts, fetchPosts ,startChartHandler}) {
                       <Card.Text className="mt-2">
                         {post.comments.map((comment) => (
                           <div key={comment._id}>
-                            <strong>{comment.user.username}</strong>
+                            <strong>{comment.user?.username || "Unknown user"}</strong>
                             <p>{comment.content}</p>
                           </div>
                         ))}
