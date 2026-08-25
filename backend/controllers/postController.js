@@ -60,18 +60,13 @@ const createPost = asyncHandler(async (req,res)=>{
     res.status(201).json(createdPost)
 });
 
-//Get posts from followings users or own posts
+// Get all posts, from every user - not just people you follow.
+// Newest posts first.
 // GET /api/posts
 
 const getPosts = asyncHandler(async (req,res)=>{
-    const user=req.user;
-    const following=user.following;
-    const posts = await Post.find({
-        $or:[
-            {user:{$in:following}},
-            {user:user._id}
-        ]
-    })
+    const posts = await Post.find({})
+    .sort({ createdAt: -1 })
     .populate('user','username profilePicture')
     .populate('comments.user','username profilePicture')
 
