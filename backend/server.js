@@ -45,7 +45,9 @@ connectDB();
 
 // ✅ Correct CORS
 app.use(cors({
-  origin: ["https://media-guvi.netlify.app", "https://social-media-delta-inky.vercel.app"],
+  origin: [ "http://localhost:3000",
+  "https://social-media-delta-inky.vercel.app",
+  "https://social-media-3q3l5cptk-vishals-projects-d10f5d85.vercel.app"],
   credentials: true
 }));
 
