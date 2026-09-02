@@ -123,8 +123,9 @@ function Login() {
       const { data } = await axios.post("/api/auth/login", formValues, config);
       localStorage.setItem("userInfo", JSON.stringify(data));
       clearForm();
-      window.location.reload();
-      navigate("/profile");
+      // Full navigation in one step, avoiding a race between reload() and
+      // navigate() - see the same fix in Signup.jsx for details.
+      window.location.href = "/profile";
     } catch (error) {
       setError(
         error.response && error.response.data.message

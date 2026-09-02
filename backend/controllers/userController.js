@@ -16,7 +16,7 @@ const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'social-media-profile-pictures',
-        allowed_formats: ['jpg', 'jpeg', 'png'],
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'avif'],
     },
 })
 
@@ -24,10 +24,20 @@ const storage = new CloudinaryStorage({
 const upload = multer({
     storage,
     fileFilter(req,file,cb){
-        if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' ||file.mimetype === 'image/jpg') {
+        // Many modern phone cameras save photos as AVIF/WEBP even when the
+        // filename still ends in .jpg, so we accept those content types too
+        // instead of rejecting a photo that "looks like" a jpg to the user.
+        const allowedMimeTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/jpg',
+            'image/webp',
+            'image/avif',
+        ];
+        if (allowedMimeTypes.includes(file.mimetype)) {
             cb(null, true);
           } else {
-            cb(new Error('Invalid file type. Only JPEG,JPG and PNG are allowed.'));
+            cb(new Error('Invalid file type. Only JPEG, PNG, WEBP and AVIF images are allowed.'));
           }
     }
 })
@@ -65,6 +75,24 @@ const getUserProfile = asyncHandler (async (req,res)=>{
     else{
         res.status(404);
         throw new Error('user is not found')
+    }
+})
+
+// @route GET /api/users/:id
+// Public profile for any user (viewing someone else's profile page).
+// Doesn't expose email or password - just what's needed to view a profile,
+// see follow counts, and follow/unfollow/message them.
+const getUserById = asyncHandler(async (req,res)=>{
+    const user = await User.findById(req.params.id)
+        .populate('followers following', 'username profilePicture')
+        .select('-password -email -twoFactorAuthSecret');
+
+    if(user){
+        res.json(user)
+    }
+    else{
+        res.status(404);
+        throw new Error('User not found')
     }
 })
 
@@ -173,4 +201,4 @@ const unfollowUser = asyncHandler (async (req,res)=>{
       }
 })
 
-module.exports={upload,uploadProfilePicture,getUserProfile,updateUserProfile,searchUsers,followUser,unfollowUser}
+module.exports={upload,uploadProfilePicture,getUserProfile,getUserById,updateUserProfile,searchUsers,followUser,unfollowUser}

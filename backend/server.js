@@ -94,10 +94,11 @@ io.on('connection', (socket) => {
     console.log(`User joined chat ${chatId}`);
   });
 
-  socket.on('sendMessage', (message) => {
-    console.log(`Message received from client: ${message.content}`);
-    io.to(message.chatId).emit('receiveMessage', message);
-    console.log(`Message sent to chat ${message.chatId}: ${message.content}`);
+  socket.on('sendMessage', (payload) => {
+    // payload shape: { chatId, message: { content, sender, timestamp, ... } }
+    console.log(`Message received from client: ${payload.message?.content}`);
+    io.to(payload.chatId).emit('receiveMessage', payload.message);
+    console.log(`Message sent to chat ${payload.chatId}: ${payload.message?.content}`);
   });
 
   socket.on('disconnect', () => {

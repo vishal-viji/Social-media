@@ -13,10 +13,19 @@ const storage = multer.memoryStorage();
 const upload = multer({
     storage,
     fileFilter(req,file,cb){
-        if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' ||file.mimetype === 'image/jpg') {
+        // Accept modern formats too (AVIF/WEBP), since some phone cameras
+        // save photos this way even when the filename says .jpg.
+        const allowedMimeTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/jpg',
+            'image/webp',
+            'image/avif',
+        ];
+        if (allowedMimeTypes.includes(file.mimetype)) {
             cb(null, true);
           } else {
-            cb(new Error('Invalid file type. Only JPEG,JPG and PNG are allowed.'));
+            cb(new Error('Invalid file type. Only JPEG, PNG, WEBP and AVIF images are allowed.'));
           }
     }
 })

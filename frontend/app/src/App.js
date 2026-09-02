@@ -5,6 +5,7 @@ import Header from './components/Header';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import Profile from './Pages/Profile';
+import PublicProfile from './Pages/PublicProfile';
 import Home from './Pages/Home';
 import Chat from './components/Chat/Chat';
 import ChatList from './components/Chat/ChatList';
@@ -19,6 +20,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/user/:id" element={<PublicProfile />} />
           <Route path="/chats" element ={<ChatList/>} />
           <Route path="/chat/:chatId" element ={<Chat/>} />
         </Routes>

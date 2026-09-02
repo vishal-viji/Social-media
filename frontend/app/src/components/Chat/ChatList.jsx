@@ -23,7 +23,7 @@ function ChatList() {
         },
       };
 
-      const { data } = await axios.get("https://social-media-backend-2zm2.onrender.com/api/chat", config);
+      const { data } = await axios.get("/api/chat", config);
       setChats(data);
     } catch (error) {
       setError(
@@ -56,7 +56,7 @@ function ChatList() {
           {chats.map((chat) => (
             <ListGroup.Item key={chat._id}>
               <div className="d-flex align-items-center">
-                {chat.users.map((user) => (
+                {chat.users.filter(Boolean).map((user) => (
                   <div
                     key={user._id}
                     className="d-flex align-items-center me-3"

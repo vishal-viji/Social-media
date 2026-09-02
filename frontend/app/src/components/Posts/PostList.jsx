@@ -1,19 +1,23 @@
 import React, { useState } from "react";
-import { Card, Button, Form } from "react-bootstrap";
+import { Card, Button, Form, Spinner } from "react-bootstrap";
 import axios from "axios";
-import Loader from "../Loader";
 import Message from "../Message";
 
+const PLACEHOLDER_AVATAR = "https://via.placeholder.com/50?text=User";
+
 function PostList({ posts, fetchPosts ,startChartHandler}) {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState("");
-  const handleClose = () => setMessage("");
+  // Track which post's comment/delete action is currently in flight,
+  // instead of one shared boolean that used to replace the whole feed
+  // with a spinner for a tiny operation like posting a comment.
+  const [submittingCommentFor, setSubmittingCommentFor] = useState(null);
+  const [deletingPostId, setDeletingPostId] = useState(null);
   const [commentContent, setCommentContent] = useState({});
 
   const submitCommentHandler = async (postId) => {
+    if (!commentContent[postId]?.trim()) return;
     try {
-      setLoading(true);
+      setSubmittingCommentFor(postId);
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       const config = {
         headers: {
@@ -23,26 +27,26 @@ function PostList({ posts, fetchPosts ,startChartHandler}) {
       };
 
       await axios.post(
-        `https://social-media-backend-2zm2.onrender.com/api/posts/${postId}/comments`,
+        `/api/posts/${postId}/comments`,
         { content: commentContent[postId] },
         config
       );
       setCommentContent({ ...commentContent, [postId]: "" });
       fetchPosts();
-      setLoading(false);
     } catch (error) {
-      setLoading(false);
       setError(
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message
       );
+    } finally {
+      setSubmittingCommentFor(null);
     }
   };
   const deletePostHandler = async (postId) => {
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
-        setLoading(true);
+        setDeletingPostId(postId);
         const userInfo = JSON.parse(localStorage.getItem("userInfo"));
         const config = {
           headers: {
@@ -58,37 +62,35 @@ function PostList({ posts, fetchPosts ,startChartHandler}) {
         );
 
         fetchPosts();
-        setLoading(false);
       } catch (error) {
-        setLoading(false);
         setError(
           error.response && error.response.data.message
             ? error.response.data.message
             : error.message
         );
+      } finally {
+        setDeletingPostId(null);
       }
     }
   };
 
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : error ? (
+      {error && (
         <Message variant="danger" onClose={() => setError(null)}>
           {error}
         </Message>
-      ) : (
-        posts?.map((post) => (
-          <>
-            <Card key={post._id} className="my-3">
+      )}
+      {posts?.map((post) => (
+          <React.Fragment key={post._id}>
+            <Card className="my-3">
               <Card.Body>
                 <Card.Title>
                   <div className="d-flex align-items-center">
                     <img
                       src={
                         post.user?.profilePicture ||
-                        "https://via.placeholder.com/50"
+                        PLACEHOLDER_AVATAR
                       }
                       alt={post.user?.username || "Unknown user"}
                       className="rounded-circle me-2"
@@ -105,8 +107,13 @@ function PostList({ posts, fetchPosts ,startChartHandler}) {
                         variant="danger"
                         className="btn-sm position-absolute top-0 end-0 m-2  btn-outline"
                         onClick={() => deletePostHandler(post._id)}
+                        disabled={deletingPostId === post._id}
                       >
-                        <i className="fa-solid fa-trash"></i>
+                        {deletingPostId === post._id ? (
+                          <Spinner animation="border" size="sm" />
+                        ) : (
+                          <i className="fa-solid fa-trash"></i>
+                        )}
                       </Button>
                     )}
 
@@ -184,8 +191,16 @@ function PostList({ posts, fetchPosts ,startChartHandler}) {
                           type="submit"
                           variant="primary"
                           className="mt-2 btn-sm"
+                          disabled={
+                            submittingCommentFor === post._id ||
+                            !commentContent[post._id]?.trim()
+                          }
                         >
-                          Comment
+                          {submittingCommentFor === post._id ? (
+                            <Spinner animation="border" size="sm" />
+                          ) : (
+                            "Comment"
+                          )}
                         </Button>
                       </Form>
 
@@ -202,9 +217,8 @@ function PostList({ posts, fetchPosts ,startChartHandler}) {
                 </div>
               </div>
             </Card>
-          </>
-        ))
-      )}
+          </React.Fragment>
+        ))}
     </>
   );
 }

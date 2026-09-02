@@ -10,17 +10,18 @@ import Profile from './Profile';
 
 function Home() {
   const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [message, setMessage] = useState("");
     const handleClose = () => setMessage("");
     const [posts, setPosts] = useState([]);
     const [chats,setChats] = useState([])
+    // Separate loading flag just for the very first load of the page,
+    // so starting a chat or other actions elsewhere don't blank out the feed.
+    const [initialLoading, setInitialLoading] = useState(true);
 
 
 const startChartHandler = async (userId)=>{
   try{
-    setLoading(true);
     const userInfo=JSON.parse(localStorage.getItem('userInfo'))
     const config = {
       headers: {
@@ -35,14 +36,11 @@ const startChartHandler = async (userId)=>{
   }
   catch (error) {
     setError(error.response && error.response.data.message ? error.response.data.message : error.message);
-  } finally {
-    setLoading(false);
   }
 }
 
 const fetchChats = async ()=>{
   try{
-    setLoading(true);
     const userInfo=JSON.parse(localStorage.getItem('userInfo'))
     const config = {
       headers: {
@@ -57,8 +55,6 @@ const fetchChats = async ()=>{
   }
   catch (error) {
     setError(error.response && error.response.data.message ? error.response.data.message : error.message);
-  } finally {
-    setLoading(false);
   }
 }
 
@@ -66,7 +62,6 @@ const fetchChats = async ()=>{
 
     const fetchPosts = async()=>{
       try{
-        setLoading(true)
         const userInfo=JSON.parse(localStorage.getItem('userInfo'));
         const config = {
           headers: {
@@ -75,11 +70,11 @@ const fetchChats = async ()=>{
         };
         const {data} = await axios.get('/api/posts',config);
         setPosts(data);
-        setLoading(false)
       }
       catch (error) {
-        setLoading(false);
         setError(error.response && error.response.data.message ? error.response.data.message : error.message);
+      } finally {
+        setInitialLoading(false);
       }
     }
 
@@ -111,8 +106,20 @@ const fetchChats = async ()=>{
         <PostForm   fetchPosts={  fetchPosts } />
         <hr />
 
+        {error && (
+          <Message variant="danger" onClose={() => setError(null)}>
+            {error}
+          </Message>
+        )}
 
-        <PostList posts={posts} fetchPosts={fetchPosts} startChartHandler={startChartHandler}/>
+        {initialLoading ? (
+          <div className="text-center my-5">
+            <Loader />
+            <p className="mt-2 text-muted">Loading posts...</p>
+          </div>
+        ) : (
+          <PostList posts={posts} fetchPosts={fetchPosts} startChartHandler={startChartHandler}/>
+        )}
         </Col>
 
 

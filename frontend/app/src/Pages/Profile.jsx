@@ -171,6 +171,7 @@ const searchHandler = async (e) => {
       );
       setMessage("Profile Picture Updated Successfully");
       setUser({ ...user, profilePicture: data.profilePicture });
+      setProfilePicture(null);
     } catch (error) {
       setError(
         error.response && error.response.data.message
@@ -318,10 +319,16 @@ const searchHandler = async (e) => {
               <Form.Group>
                 <Form.Control
                   type="file"
+                  accept="image/*"
                   onChange={(e) => setProfilePicture(e.target.files[0])}
                 ></Form.Control>
               </Form.Group>
-              <Button type="submit" variant="light" className="mt-3 btn-sm">
+              <Button
+                type="submit"
+                variant="light"
+                className="mt-3 btn-sm"
+                disabled={!profilePicture || loading}
+              >
                 Upload/Edit Profile Picture
               </Button>
             </Form>
@@ -526,7 +533,7 @@ const searchHandler = async (e) => {
                 {userPosts.map((post) => (
                   <Col key={post._id} xs={4}>
                     <Card>
-                      <Link to={`/post/${post._id}`}>
+                      {post.image ? (
                         <Card.Img
                           variant="top"
                           src={post.image}
@@ -534,11 +541,19 @@ const searchHandler = async (e) => {
                           className="img-fluid"
                           style={{
                             width: "100%",
-                            height: "auto",
+                            height: "150px",
                             objectFit: "cover",
                           }}
                         />
-                      </Link>
+                      ) : (
+                        <Card.Body
+                          style={{ height: "150px", overflow: "hidden" }}
+                        >
+                          <Card.Text className="small text-truncate">
+                            {post.content}
+                          </Card.Text>
+                        </Card.Body>
+                      )}
                     </Card>
                   </Col>
                 ))}

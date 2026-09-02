@@ -157,8 +157,11 @@ function Signup() {
       const { data } = await axios.post("/api/auth/signup", formValues, config);
       localStorage.setItem("userInfo", JSON.stringify(data));
       clearForm();
-      window.location.reload();
-      navigate(redirect);
+      // Full navigation to the destination in one step - this also makes
+      // sure Header re-reads localStorage and shows the logged-in state.
+      // (Previously this called reload() and navigate() separately, which
+      // raced against each other and could just reload the signup page.)
+      window.location.href = redirect;
     } catch (error) {
       setError(
         error.response && error.response.data.message
