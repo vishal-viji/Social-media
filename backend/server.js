@@ -97,7 +97,11 @@ io.on('connection', (socket) => {
   socket.on('sendMessage', (payload) => {
     // payload shape: { chatId, message: { content, sender, timestamp, ... } }
     console.log(`Message received from client: ${payload.message?.content}`);
-    io.to(payload.chatId).emit('receiveMessage', payload.message);
+    // socket.to() (not io.to()) broadcasts to everyone else in the room
+    // EXCEPT this sender's own connection - the sender already shows their
+    // own message locally the instant they hit send, so echoing it back
+    // to them too would just create a visible duplicate.
+    socket.to(payload.chatId).emit('receiveMessage', payload.message);
     console.log(`Message sent to chat ${payload.chatId}: ${payload.message?.content}`);
   });
 

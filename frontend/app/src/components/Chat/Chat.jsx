@@ -93,22 +93,29 @@ function Chat() {
       const { data } = await axios.post(`/api/chat/${chatId}/message`, { content: messageContent }, config);
       const lastMessage = data.messages[data.messages.length - 1];
 
-      // Show it in our own window immediately.
-      setMessages((prev) => [...prev, lastMessage]);
+      // The message we just get back from the save API only has a bare
+      // sender ID (not a populated user object), so build one clean,
+      // fully-formed message using our own known info and use THIS
+      // everywhere - both for our own screen and for the socket broadcast -
+      // instead of mixing the raw API response with a separately patched
+      // socket payload (which caused "Unknown user" / duplicate messages).
+      const fullMessage = {
+        ...lastMessage,
+        sender: {
+          _id: currentUserInfo._id,
+          username: currentUserInfo.username,
+          profilePicture: currentUserInfo.profilePicture,
+        },
+      };
 
-      // Send the full message (with sender info) so the other person's
-      // window can show the sender's name/avatar correctly too, instead of
-      // just raw text.
+      // Show it in our own window immediately.
+      setMessages((prev) => [...prev, fullMessage]);
+
+      // Send the same fully-formed message so the other person's window
+      // shows the sender's name/avatar correctly too.
       socket.emit('sendMessage', {
         chatId,
-        message: {
-          ...lastMessage,
-          sender: {
-            _id: currentUserInfo._id,
-            username: currentUserInfo.username,
-            profilePicture: currentUserInfo.profilePicture,
-          },
-        },
+        message: fullMessage,
       });
       setMessageContent('');
     } catch (error) {
